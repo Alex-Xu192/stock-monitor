@@ -1,0 +1,23 @@
+[
+  {
+    "code": "sz300024",
+    "name": "机器人",
+    "targets": [
+      {
+        "price": 14.0,
+        "direction": "below",
+        "label": "第一档提醒"
+      },
+      {
+        "price": 11.0,
+        "direction": "below",
+        "label": "第二档提醒"
+      },
+      {
+        "price": 8.0,
+        "direction": "below",
+        "label": "第三档提醒"
+      }
+    ]
+  }
+]
