@@ -1,22 +1,22 @@
 [
   {
-    "code": "sz300024",
-    "name": "机器人",
+    "code": "sz000902",
+    "name": "新洋丰",
     "targets": [
-      {
-        "price": 14.0,
-        "direction": "below",
-        "label": "第一档提醒"
-      },
       {
         "price": 11.0,
         "direction": "below",
-        "label": "第二档提醒"
+        "label": "11元提醒"
       },
       {
-        "price": 8.0,
+        "price": 10.0,
         "direction": "below",
-        "label": "第三档提醒"
+        "label": "10元提醒"
+      },
+      {
+        "price": 9.0,
+        "direction": "below",
+        "label": "9元提醒"
       }
     ]
   }

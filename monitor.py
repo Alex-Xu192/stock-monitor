@@ -9,6 +9,7 @@ import requests
 
 
 CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", "stocks.json"))
+STATE_PATH = Path(os.environ.get("STATE_PATH", ".monitor-state.json"))
 MAIL_HOST = os.environ.get("MAIL_HOST", "smtp.qq.com")
 MAIL_PORT = int(os.environ.get("MAIL_PORT", "465"))
 MAIL_USER = os.environ.get("MAIL_USER")
@@ -27,8 +28,10 @@ def send_email(title, content):
             server.login(MAIL_USER, MAIL_PASS)
             server.sendmail(MAIL_USER, [RECEIVER], msg.as_string())
         print("邮件发送成功")
+        return True
     except Exception as exc:
         print(f"邮件发送失败: {exc}")
+        return False
 
 
 def load_stocks():
@@ -44,9 +47,29 @@ def load_stocks():
     return stocks
 
 
+def load_state():
+    if not STATE_PATH.exists():
+        return {"notified": []}
+
+    with STATE_PATH.open("r", encoding="utf-8") as file:
+        state = json.load(file)
+
+    if not isinstance(state, dict) or not isinstance(state.get("notified"), list):
+        return {"notified": []}
+
+    return state
+
+
+def save_state(state):
+    with STATE_PATH.open("w", encoding="utf-8") as file:
+        json.dump(state, file, ensure_ascii=False, indent=2)
+        file.write("\n")
+
+
 def fetch_price(stock_code):
     url = f"https://qt.gtimg.cn/q={stock_code}"
     response = requests.get(url, timeout=10)
+    response.raise_for_status()
     response.encoding = "gbk"
 
     data = response.text.split("~")
@@ -57,6 +80,12 @@ def fetch_price(stock_code):
     current_price = float(data[3])
     quote_time = data[30] if len(data) > 30 else ""
     return name, current_price, quote_time
+
+
+def target_key(code, target):
+    price = float(target["price"])
+    direction = target.get("direction", "below").lower()
+    return f"{code}:{direction}:{price:.3f}"
 
 
 def is_triggered(current_price, target):
@@ -71,20 +100,27 @@ def is_triggered(current_price, target):
     raise ValueError(f"不支持的 direction: {direction}")
 
 
-def check_stock(stock):
+def check_stock(stock, state):
     code = stock["code"]
     display_name = stock.get("name", code)
     targets = stock.get("targets", [])
+    notified = set(state.get("notified", []))
 
     if not targets:
         print(f"{display_name} ({code}) 未配置目标价格，跳过")
-        return
+        return False
 
     actual_name, current_price, quote_time = fetch_price(code)
     name = display_name or actual_name
     print(f"{name} ({code}) 当前价格: {current_price} 行情时间: {quote_time}")
 
+    state_changed = False
     for target in targets:
+        key = target_key(code, target)
+        if key in notified:
+            print(f"{name} ({code}) 已通知过 {target['price']} 元，跳过")
+            continue
+
         if not is_triggered(current_price, target):
             continue
 
@@ -93,14 +129,20 @@ def check_stock(stock):
         direction_text = "低于或等于" if direction == "below" else "高于或等于"
         label = target.get("label", "价格提醒")
 
-        send_email(
-            f"【股价警报】{name} {label}",
+        sent = send_email(
+            f"【股价提醒】{name} {label}",
             (
-                f"您监控的股票 {name} ({code}) 当前价格为 {current_price}，"
-                f"已{direction_text}目标价 {target_price}。\n"
+                f"您监控的股票 {name} ({code}) 当前价格为 {current_price} 元，"
+                f"已{direction_text}目标价 {target_price} 元。\n"
                 f"行情时间: {quote_time}"
             ),
         )
+        if sent:
+            notified.add(key)
+            state_changed = True
+
+    state["notified"] = sorted(notified)
+    return state_changed
 
 
 def main():
@@ -109,11 +151,16 @@ def main():
         sys.exit(1)
 
     try:
+        state = load_state()
+        state_changed = False
         for stock in load_stocks():
             try:
-                check_stock(stock)
+                state_changed = check_stock(stock, state) or state_changed
             except Exception as exc:
                 print(f"检查股票失败: {stock.get('code', 'UNKNOWN')} {exc}")
+
+        if state_changed:
+            save_state(state)
     except Exception as exc:
         print(f"程序执行出错: {exc}")
         sys.exit(1)
