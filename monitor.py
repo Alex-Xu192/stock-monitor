@@ -15,6 +15,7 @@ MAIL_PORT = int(os.environ.get("MAIL_PORT", "465"))
 MAIL_USER = os.environ.get("MAIL_USER")
 MAIL_PASS = os.environ.get("MAIL_PASS")
 RECEIVER = os.environ.get("RECEIVER")
+TROY_OUNCE_GRAMS = 31.1034768
 
 
 def send_email(title, content):
@@ -66,7 +67,7 @@ def save_state(state):
         file.write("\n")
 
 
-def fetch_price(stock_code):
+def fetch_stock_price(stock_code):
     url = f"https://qt.gtimg.cn/q={stock_code}"
     response = requests.get(url, timeout=10)
     response.raise_for_status()
@@ -74,12 +75,62 @@ def fetch_price(stock_code):
 
     data = response.text.split("~")
     if len(data) < 4:
-        raise ValueError(f"获取股价数据失败: {stock_code}")
+        raise ValueError(f"获取股票价格数据失败: {stock_code}")
 
     name = data[1]
     current_price = float(data[3])
     quote_time = data[30] if len(data) > 30 else ""
-    return name, current_price, quote_time
+    return name, current_price, quote_time, "元"
+
+
+def fetch_usd_cny_rate():
+    url = "https://open.er-api.com/v6/latest/USD"
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+    data = response.json()
+
+    rate = data.get("rates", {}).get("CNY")
+    if not rate:
+        raise ValueError("获取美元兑人民币汇率失败")
+
+    quote_time = data.get("time_last_update_utc", "")
+    return float(rate), quote_time
+
+
+def fetch_gold_price(item):
+    code = item.get("code", "hf_XAU")
+    url = f"https://qt.gtimg.cn/q={code}"
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+    response.encoding = "gbk"
+
+    text = response.text.strip()
+    if '="' not in text:
+        raise ValueError(f"获取黄金价格数据失败: {code}")
+
+    payload = text.split('="', 1)[1].rstrip('";')
+    fields = payload.split(",")
+    if len(fields) < 14:
+        raise ValueError(f"黄金价格数据格式异常: {code}")
+
+    usd_per_ounce = float(fields[0])
+    xau_time = f"{fields[12]} {fields[6]}" if fields[12] and fields[6] else ""
+    actual_name = fields[13] or code
+    usd_cny_rate, fx_time = fetch_usd_cny_rate()
+    cny_per_gram = usd_per_ounce * usd_cny_rate / TROY_OUNCE_GRAMS
+    quote_time = f"{xau_time}; USD/CNY {usd_cny_rate:.4f} ({fx_time})"
+    return actual_name, round(cny_per_gram, 2), quote_time, "元/克"
+
+
+def fetch_price(item):
+    item_type = item.get("type", "stock").lower()
+
+    if item_type == "stock":
+        return fetch_stock_price(item["code"])
+    if item_type == "gold":
+        return fetch_gold_price(item)
+
+    raise ValueError(f"不支持的 type: {item_type}")
 
 
 def target_key(code, target):
@@ -100,25 +151,25 @@ def is_triggered(current_price, target):
     raise ValueError(f"不支持的 direction: {direction}")
 
 
-def check_stock(stock, state):
-    code = stock["code"]
-    display_name = stock.get("name", code)
-    targets = stock.get("targets", [])
+def check_item(item, state):
+    code = item["code"]
+    display_name = item.get("name", code)
+    targets = item.get("targets", [])
     notified = set(state.get("notified", []))
 
     if not targets:
         print(f"{display_name} ({code}) 未配置目标价格，跳过")
         return False
 
-    actual_name, current_price, quote_time = fetch_price(code)
+    actual_name, current_price, quote_time, unit = fetch_price(item)
     name = display_name or actual_name
-    print(f"{name} ({code}) 当前价格: {current_price} 行情时间: {quote_time}")
+    print(f"{name} ({code}) 当前价格: {current_price} {unit} 行情时间: {quote_time}")
 
     state_changed = False
     for target in targets:
         key = target_key(code, target)
         if key in notified:
-            print(f"{name} ({code}) 已通知过 {target['price']} 元，跳过")
+            print(f"{name} ({code}) 已通知过 {target['price']} {unit}，跳过")
             continue
 
         if not is_triggered(current_price, target):
@@ -130,10 +181,10 @@ def check_stock(stock, state):
         label = target.get("label", "价格提醒")
 
         sent = send_email(
-            f"【股价提醒】{name} {label}",
+            f"【价格提醒】{name} {label}",
             (
-                f"您监控的股票 {name} ({code}) 当前价格为 {current_price} 元，"
-                f"已{direction_text}目标价 {target_price} 元。\n"
+                f"您监控的 {name} ({code}) 当前价格为 {current_price} {unit}，"
+                f"已{direction_text}目标价 {target_price} {unit}。\n"
                 f"行情时间: {quote_time}"
             ),
         )
@@ -153,11 +204,11 @@ def main():
     try:
         state = load_state()
         state_changed = False
-        for stock in load_stocks():
+        for item in load_stocks():
             try:
-                state_changed = check_stock(stock, state) or state_changed
+                state_changed = check_item(item, state) or state_changed
             except Exception as exc:
-                print(f"检查股票失败: {stock.get('code', 'UNKNOWN')} {exc}")
+                print(f"检查标的失败: {item.get('code', 'UNKNOWN')} {exc}")
 
         if state_changed:
             save_state(state)

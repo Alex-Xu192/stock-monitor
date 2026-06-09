@@ -1,5 +1,6 @@
 [
   {
+    "type": "stock",
     "code": "sz000902",
     "name": "新洋丰",
     "targets": [
@@ -17,6 +18,28 @@
         "price": 9.0,
         "direction": "below",
         "label": "9元提醒"
+      }
+    ]
+  },
+  {
+    "type": "gold",
+    "code": "hf_XAU",
+    "name": "现货黄金",
+    "targets": [
+      {
+        "price": 900.0,
+        "direction": "below",
+        "label": "900元/克提醒"
+      },
+      {
+        "price": 800.0,
+        "direction": "below",
+        "label": "800元/克提醒"
+      },
+      {
+        "price": 700.0,
+        "direction": "below",
+        "label": "700元/克提醒"
       }
     ]
   }
