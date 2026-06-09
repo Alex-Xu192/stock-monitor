@@ -22,6 +22,28 @@
     ]
   },
   {
+    "type": "stock",
+    "code": "sz300024",
+    "name": "机器人",
+    "targets": [
+      {
+        "price": 14.0,
+        "direction": "below",
+        "label": "14元提醒"
+      },
+      {
+        "price": 11.0,
+        "direction": "below",
+        "label": "11元提醒"
+      },
+      {
+        "price": 9.0,
+        "direction": "below",
+        "label": "9元提醒"
+      }
+    ]
+  },
+  {
     "type": "gold",
     "code": "hf_XAU",
     "name": "现货黄金",
