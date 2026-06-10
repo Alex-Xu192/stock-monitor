@@ -108,5 +108,27 @@
         "label": "15元提醒"
       }
     ]
+  },
+  {
+    "type": "silver",
+    "code": "hf_XAG",
+    "name": "现货白银",
+    "targets": [
+      {
+        "price": 12.0,
+        "direction": "below",
+        "label": "12元/克提醒"
+      },
+      {
+        "price": 10.0,
+        "direction": "below",
+        "label": "10元/克提醒"
+      },
+      {
+        "price": 8.0,
+        "direction": "below",
+        "label": "8元/克提醒"
+      }
+    ]
   }
 ]

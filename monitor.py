@@ -129,6 +129,8 @@ def fetch_price(item):
         return fetch_stock_price(item["code"])
     if item_type == "gold":
         return fetch_gold_price(item)
+    if item_type == "silver":
+        return fetch_gold_price(item)
 
     raise ValueError(f"不支持的 type: {item_type}")
 
