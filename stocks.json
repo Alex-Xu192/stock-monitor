@@ -64,5 +64,49 @@
         "label": "700元/克提醒"
       }
     ]
+  },
+  {
+    "type": "stock",
+    "code": "sz000858",
+    "name": "五粮液",
+    "targets": [
+      {
+        "price": 70.0,
+        "direction": "below",
+        "label": "70元提醒"
+      },
+      {
+        "price": 60.0,
+        "direction": "below",
+        "label": "60元提醒"
+      },
+      {
+        "price": 50.0,
+        "direction": "below",
+        "label": "50元提醒"
+      }
+    ]
+  },
+  {
+    "type": "stock",
+    "code": "sh600079",
+    "name": "人福医药",
+    "targets": [
+      {
+        "price": 17.0,
+        "direction": "below",
+        "label": "17元提醒"
+      },
+      {
+        "price": 16.0,
+        "direction": "below",
+        "label": "16元提醒"
+      },
+      {
+        "price": 15.0,
+        "direction": "below",
+        "label": "15元提醒"
+      }
+    ]
   }
 ]
