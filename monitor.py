@@ -181,14 +181,19 @@ def check_item(item, state):
         direction = target.get("direction", "below").lower()
         direction_text = "低于或等于" if direction == "below" else "高于或等于"
         label = target.get("label", "价格提醒")
+        position_hint = target.get("position_hint")
+
+        body = (
+            f"您监控的 {name} ({code}) 当前价格为 {current_price} {unit}，"
+            f"已{direction_text}目标价 {target_price} {unit}。\n"
+            f"行情时间: {quote_time}"
+        )
+        if position_hint:
+            body += f"\n加仓建议: {position_hint}"
 
         sent = send_email(
             f"【价格提醒】{name} {label}",
-            (
-                f"您监控的 {name} ({code}) 当前价格为 {current_price} {unit}，"
-                f"已{direction_text}目标价 {target_price} {unit}。\n"
-                f"行情时间: {quote_time}"
-            ),
+            body,
         )
         if sent:
             notified.add(key)
