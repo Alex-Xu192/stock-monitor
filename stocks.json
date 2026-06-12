@@ -130,5 +130,27 @@
         "label": "8元/克提醒"
       }
     ]
+  },
+  {
+    "type": "stock",
+    "code": "sz002378",
+    "name": "章源钨业",
+    "targets": [
+      {
+        "price": 32.56,
+        "direction": "below",
+        "label": "成本价下跌10%"
+      },
+      {
+        "price": 28.94,
+        "direction": "below",
+        "label": "成本价下跌20%"
+      },
+      {
+        "price": 25.33,
+        "direction": "below",
+        "label": "成本价下跌30%"
+      }
+    ]
   }
 ]
