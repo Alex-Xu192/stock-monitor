@@ -140,19 +140,19 @@
         "price": 32.56,
         "direction": "below",
         "label": "成本价下跌10%",
-        "position_hint": "先加 10% 仓位，观察是否继续走弱。"
+        "position_hint": "加 1 手，合计 2 手。"
       },
       {
         "price": 28.94,
         "direction": "below",
         "label": "成本价下跌20%",
-        "position_hint": "再加 15% 仓位，分两次执行更稳妥。"
+        "position_hint": "再加 1 手，合计 3 手。"
       },
       {
         "price": 25.33,
         "direction": "below",
         "label": "成本价下跌30%",
-        "position_hint": "可考虑再加 20% 仓位，但保留现金。"
+        "position_hint": "再加 2 手，合计 5 手。"
       }
     ]
   }
