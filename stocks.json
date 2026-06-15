@@ -155,5 +155,27 @@
         "position_hint": "再加 2 手，合计 5 手。"
       }
     ]
+  },
+  {
+    "type": "stock",
+    "code": "sz000333",
+    "name": "美的集团",
+    "targets": [
+      {
+        "price": 72.0,
+        "direction": "below",
+        "label": "72元提醒"
+      },
+      {
+        "price": 64.0,
+        "direction": "below",
+        "label": "64元提醒"
+      },
+      {
+        "price": 56.0,
+        "direction": "below",
+        "label": "56元提醒"
+      }
+    ]
   }
 ]
