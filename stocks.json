@@ -177,5 +177,27 @@
         "label": "56元提醒"
       }
     ]
+  },
+  {
+    "type": "stock",
+    "code": "sh600999",
+    "name": "招商证券",
+    "targets": [
+      {
+        "price": 18.4,
+        "direction": "below",
+        "label": "18.4元提醒"
+      },
+      {
+        "price": 18.2,
+        "direction": "below",
+        "label": "18.2元提醒"
+      },
+      {
+        "price": 18.0,
+        "direction": "below",
+        "label": "18元提醒"
+      }
+    ]
   }
 ]
