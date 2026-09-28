@@ -184,19 +184,14 @@
     "name": "招商证券",
     "targets": [
       {
-        "price": 18.4,
+        "price": 19.0,
         "direction": "below",
-        "label": "18.4元提醒"
+        "label": "19元提醒"
       },
       {
-        "price": 18.2,
+        "price": 15.0,
         "direction": "below",
-        "label": "18.2元提醒"
-      },
-      {
-        "price": 18.0,
-        "direction": "below",
-        "label": "18元提醒"
+        "label": "15元提醒"
       }
     ]
   }
