@@ -185,7 +185,7 @@
     "targets": [
       {
         "price": 19.0,
-        "direction": "below",
+        "direction": "above",
         "label": "19元提醒"
       },
       {
