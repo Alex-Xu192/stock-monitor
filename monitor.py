@@ -14,7 +14,7 @@ MAIL_HOST = os.environ.get("MAIL_HOST", "smtp.qq.com")
 MAIL_PORT = int(os.environ.get("MAIL_PORT", "465"))
 MAIL_USER = os.environ.get("MAIL_USER")
 MAIL_PASS = os.environ.get("MAIL_PASS")
-RECEIVER = os.environ.get("RECEIVER")
+RECEIVER = os.environ.get("RECEIVER", "alex@emalex666.dpdns.org")
 TROY_OUNCE_GRAMS = 31.1034768
 
 
