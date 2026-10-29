@@ -88,7 +88,7 @@ GitHub Actions 定时监控价格，触发目标价格后发送邮件提醒。
 
 - `MAIL_USER`: 发件邮箱，例如 `232631653@qq.com`
 - `MAIL_PASS`: 邮箱 SMTP 授权码，不是邮箱登录密码
-- `RECEIVER`: 收件邮箱，例如 `alex@emalex666.dpdns.org`
+- `RECEIVER`: 收件邮箱，例如 `alex653@163.com`
 
 当前工作流默认使用 QQ 邮箱 SMTP：
 
@@ -106,7 +106,7 @@ PowerShell:
 ```powershell
 $env:MAIL_USER="232631653@qq.com"
 $env:MAIL_PASS="你的SMTP授权码"
-$env:RECEIVER="alex@emalex666.dpdns.org"
+$env:RECEIVER="alex653@163.com"
 python -m pip install -r requirements.txt
 python monitor.py
 ```
